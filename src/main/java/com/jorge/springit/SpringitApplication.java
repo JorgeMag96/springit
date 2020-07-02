@@ -24,6 +24,7 @@ public class SpringitApplication {
             Link link = new Link("Getting started with Spring Boot 2", "https://www.testlinkpage.com/spring-boot-2");
             linkRepository.save(link);
 
+
             Comment comment = new Comment("This Spring Boot 2 is awesome!", link);
             commentRepository.save(comment);
             link.addComment(comment);
