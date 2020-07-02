@@ -1,8 +1,7 @@
 package com.jorge.springit.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+@RequiredArgsConstructor
+@Getter @Setter
+@ToString
 @NoArgsConstructor
 public class Link extends Auditable{
 
@@ -29,5 +30,9 @@ public class Link extends Auditable{
     //Comments
     @OneToMany(mappedBy = "link")
     private List<Comment> comments = new ArrayList<>();
+
+    public void addComment(Comment comment){
+        this.comments.add(comment);
+    }
 
 }
