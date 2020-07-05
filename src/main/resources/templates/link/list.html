@@ -8,7 +8,7 @@
     <div th:replace="~{layouts/main_layout :: jumbotron}"></div>
 
         <!-- links -->
-        <div class="row link" th:each="link : ${links}">
+        <div class="row link" th:each="link : ${links}" style="margin:auto;">
             <div class="col-1">
                 <div><a href="#" class="upvote"><i class="fas fa-arrow-up"></i></a></div>
                 <div><span class="votecount">3</span></div>
