@@ -4,7 +4,6 @@ import com.jorge.springit.service.BeanUtil;
 import com.ocpsoft.pretty.time.PrettyTime;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +21,6 @@ import java.util.List;
 @Entity
 @RequiredArgsConstructor
 @Getter @Setter
-@ToString
 @NoArgsConstructor
 public class Link extends Auditable{
 

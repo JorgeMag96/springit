@@ -1,15 +1,19 @@
 package com.jorge.springit.controller;
 
+import com.jorge.springit.model.Comment;
 import com.jorge.springit.model.Link;
+import com.jorge.springit.repository.CommentRepository;
 import com.jorge.springit.repository.LinkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.Optional;
 
@@ -19,9 +23,11 @@ public class LinkController {
     private static final Logger logger = LoggerFactory.getLogger(LinkController.class);
 
     private LinkRepository linkRepository;
+    private CommentRepository commentRepository;
 
-    public LinkController(LinkRepository linkRepository){
+    public LinkController(LinkRepository linkRepository, CommentRepository commentRepository){
         this.linkRepository = linkRepository;
+        this.commentRepository = commentRepository;
     }
 
     @GetMapping("/")
@@ -32,10 +38,14 @@ public class LinkController {
 
     @GetMapping("/link/{id}")
     public String read(@PathVariable Long id, Model model){
-        Optional<Link> link = linkRepository.findById(id);
+        Optional<Link> optionalLink = linkRepository.findById(id);
 
-        if(link.isPresent()){
-            model.addAttribute("link",link.get());
+        if(optionalLink.isPresent()){
+            Link link = optionalLink.get();
+            Comment comment = new Comment();
+            comment.setLink(link);
+            model.addAttribute("comment", comment);
+            model.addAttribute("link",link);
             model.addAttribute("success",model.containsAttribute("success"));
             return"link/view";
         }
@@ -65,5 +75,24 @@ public class LinkController {
                     .addFlashAttribute("success", true);
             return "redirect:/link/{id}";
         }
+    }
+
+    @Secured({"ROLE_USER"})
+    @PostMapping("/link/{linkID}/addComment")
+    public String addComment(@Valid Comment comment, @PathVariable Long linkID, BindingResult bindingResult) {
+        if( bindingResult.hasErrors() ) {
+            logger.info("There was a problem adding a new comment.");
+        } else {
+            Optional<Link> optlink = linkRepository.findById(linkID);
+            if(optlink.isPresent()){
+                comment.setLink(optlink.get());
+                commentRepository.save(comment);
+                logger.info("New comment saved successfully.");
+            } else {
+                logger.info("Invalid link id = "+linkID);
+            }
+        }
+
+        return "redirect:/link/"+linkID;
     }
 }
