@@ -5,10 +5,7 @@ import com.ocpsoft.pretty.time.PrettyTime;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,6 +43,9 @@ public class Link extends Auditable{
     private List<Vote> votes = new ArrayList<>();
 
     private int voteCount = 0;
+
+    @ManyToOne
+    private User user;
 
     public String getDomainName() throws URISyntaxException
     {

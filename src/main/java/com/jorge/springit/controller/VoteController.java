@@ -4,6 +4,7 @@ import com.jorge.springit.model.Link;
 import com.jorge.springit.model.Vote;
 import com.jorge.springit.service.LinkService;
 import com.jorge.springit.service.VoteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,17 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 public class VoteController {
 
-    private VoteService voteService;
-    private LinkService linkService;
+    private final VoteService voteService;
+    private final LinkService linkService;
 
-    public VoteController(VoteService voteService, LinkService linkService){
-        this.voteService = voteService;
-        this.linkService = linkService;
-    }
-
-    // http://localhost:8080/vote/link/1/direction/-1/votecount/5
     @Secured({"ROLE_USER"})
     @GetMapping("/vote/link/{linkID}/direction/{direction}/votecount/{voteCount}")
     public int vote(@PathVariable Long linkID, @PathVariable short direction, @PathVariable int voteCount){

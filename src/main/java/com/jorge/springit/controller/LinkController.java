@@ -4,6 +4,7 @@ import com.jorge.springit.model.Comment;
 import com.jorge.springit.model.Link;
 import com.jorge.springit.repository.CommentRepository;
 import com.jorge.springit.service.LinkService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.annotation.Secured;
@@ -17,17 +18,13 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @Controller
+@RequiredArgsConstructor
 public class LinkController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LinkController.class);
+    private final Logger logger = LoggerFactory.getLogger(LinkController.class);
 
-    private LinkService linkService;
-    private CommentRepository commentRepository;
-
-    public LinkController(LinkService linkService, CommentRepository commentRepository){
-        this.linkService = linkService;
-        this.commentRepository = commentRepository;
-    }
+    private final LinkService linkService;
+    private final CommentRepository commentRepository;
 
     @GetMapping("/")
     public String list(Model model){

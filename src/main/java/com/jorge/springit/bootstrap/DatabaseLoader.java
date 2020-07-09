@@ -8,6 +8,7 @@ import com.jorge.springit.repository.CommentRepository;
 import com.jorge.springit.repository.LinkRepository;
 import com.jorge.springit.repository.RoleRepository;
 import com.jorge.springit.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class DatabaseLoader implements CommandLineRunner {
 
     private final LinkRepository linkRepository;
@@ -25,13 +27,7 @@ public class DatabaseLoader implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
 
-    public DatabaseLoader(LinkRepository linkRepository, CommentRepository commentRepository,
-                          RoleRepository roleRepository, UserRepository userRepository) {
-        this.linkRepository = linkRepository;
-        this.commentRepository = commentRepository;
-        this.roleRepository = roleRepository;
-        this.userRepository = userRepository;
-    }
+    private HashMap<String, User> users = new HashMap<>();
 
     @Override
     public void run(String... args) {
@@ -53,7 +49,16 @@ public class DatabaseLoader implements CommandLineRunner {
         links.put("File download example using Spring REST Controller","https://www.jeejava.com/file-download-example-using-spring-rest-controller/");
 
         links.forEach((k,v) -> {
+
             Link link = new Link(k,v);
+
+            // add the user to the link
+            if(k.startsWith("Build")){
+                link.setUser(users.get("admin"));
+            } else {
+                link.setUser(users.get("user"));
+            }
+
             linkRepository.save(link);
 
             // we will do something with comments later
@@ -80,17 +85,23 @@ public class DatabaseLoader implements CommandLineRunner {
         Role adminRole = new Role("ROLE_ADMIN");
         roleRepository.save(adminRole);
 
-        User user = new User("user","user@gmail.com",secret,true);
+        User user = new User("Jorge_user", "Villarreal_user","user","user@gmail.com",secret,true);
         user.addRole(userRole);
+        user.setConfirmPassword(secret);
         userRepository.save(user);
+        users.put("user", user);
 
-        User admin = new User("admin", "admin@gmail.com",secret,true);
+        User admin = new User("Jorge_admin", "Villarreal_admin","admin", "admin@gmail.com",secret,true);
         admin.addRole(adminRole);
+        admin.setConfirmPassword(secret);
         userRepository.save(admin);
+        users.put("admin", admin);
 
-        User master = new User("master","super@gmail.com",secret,true);
+        User master = new User("Jorge_master", "Villarreal_master","master","super@gmail.com",secret,true);
         master.addRoles(new HashSet<>(Arrays.asList(userRole,adminRole)));
+        master.setConfirmPassword(secret);
         userRepository.save(master);
+        users.put("master", master);
 
     }
 }

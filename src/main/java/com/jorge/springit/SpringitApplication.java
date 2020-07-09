@@ -15,6 +15,7 @@ public class SpringitApplication {
 
     // http://localhost:8080/
 
+
     public static void main(String[] args) {
         SpringApplication.run(SpringitApplication.class, args);
     }

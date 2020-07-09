@@ -1,11 +1,13 @@
 package com.jorge.springit.model;
 
+import com.jorge.springit.security.validator.PasswordsMatch;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 @Getter @Setter
 @ToString
 @NoArgsConstructor
+@PasswordsMatch
 public class User implements UserDetails {
 
     @Id
@@ -23,8 +26,17 @@ public class User implements UserDetails {
     private Long id;
 
     @NonNull
-    @Column(nullable = false)
-    private String fullName;
+    @NotEmpty(message = "You must enter a First Name.")
+    private String firstName;
+
+    @NonNull
+    @NotEmpty(message = "You must enter a Last Name.")
+    private String lastName;
+
+    @NonNull
+    @NotEmpty(message = "Please enter alias.")
+    @Column(nullable = false, unique = true)
+    private String alias;
 
     @NonNull
     @Size(min = 8, max =  20)
@@ -35,9 +47,23 @@ public class User implements UserDetails {
     @Column(length = 100)
     private String password;
 
+    @Transient
+    @NotEmpty(message = "Please enter Password Confirmation.")
+    private String confirmPassword;
+
     @NonNull
     @Column(nullable = false)
     private boolean enabled;
+
+    private String activationCode;
+
+    @Transient
+    @Setter(AccessLevel.NONE)
+    private String fullName;
+
+    public String getFullName(){
+        return firstName + " " + lastName;
+    }
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -56,7 +82,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return alias;
     }
 
     @Override
